@@ -23,6 +23,21 @@
 
   <style>
 
+    :root {
+      --spacing: 10px;
+      --blur: 10px;
+      --base: #ffc600;
+    }
+
+    img {
+      border: var(--spacing) solid var(--base);
+      filter: blur(var(--blur));
+    }
+
+    .hl {
+      color: var(--base);
+    }
+
     /*
       misc styles, nothing to do with CSS variables
     */
@@ -46,6 +61,17 @@
   </style>
 
   <script>
+
+    let root = document.querySelector(':root');
+
+    let inputs = document.querySelectorAll('.controls input');
+
+    inputs.forEach((input) => {
+      input.addEventListener('change', (e) => {
+        root.style.setProperty(`--${input.name}`, e.target.value + `${input.dataset.sizing || ''}`);
+      })
+    })
+ 
   </script>
 
 </body>

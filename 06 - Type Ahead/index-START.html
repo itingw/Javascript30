@@ -12,11 +12,71 @@
     <input type="text" class="search" placeholder="City or State">
     <ul class="suggestions">
       <li>Filter for a city</li>
-      <li>or a state</li>
+      <li>or a state</li> 
     </ul>
   </form>
 <script>
 const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+let cities = []
+
+fetch(endpoint)
+  .then(response => response.json())
+  .then(data => cities.push(...data));
+
+let searchInput = document.querySelector(".search");
+let suggestions = document.querySelector(".suggestions");
+
+searchInput.addEventListener('keyup', (e) => {
+  let matches = findMatches(e.target.value);
+  displayMatches(matches, e.target.value);
+});
+
+let findMatches = (value) => {
+  return cities.filter((location) => {
+    let regEx = new RegExp(value, "gi")
+    return location.city.match(regEx) || location.state.match(regEx)
+  });
+
+};
+
+let displayMatches = (matches, highlight) => {
+  let listItems = document.querySelectorAll(".suggestions li");
+
+  listItems.forEach((item) => {
+    item.remove();
+  });
+  matches.forEach((match) => {
+    let matchItem = document.createElement("li");
+    let nameSpan = renderName(match, highlight);
+    let populationSpan = renderPopulation(match);
+  
+    matchItem.append(nameSpan, populationSpan)
+    suggestions.append(matchItem);
+  });
+};
+
+let renderName = (match, highlight) => {
+  let nameSpan = document.createElement("span");
+
+  let highlightExpression = new RegExp(highlight, "gi");
+  let highlightSpan = `<span class="hl">${highlight}</span>`;
+
+  let city = match.city.replace(highlightExpression, highlightSpan);
+  let state = match.state.replace(highlightExpression, highlightSpan);
+  nameSpan.innerHTML = city + ", " + state;
+
+  return nameSpan;
+};
+
+let renderPopulation = (match) => {
+  let populationSpan = document.createElement("span");
+  populationSpan.innerHTML = Number(match.population).toLocaleString("en-US");
+  populationSpan.classList = "population";
+
+  return populationSpan;
+};
+
 
 </script>
 </body>
